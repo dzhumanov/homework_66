@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Meals, mealProps } from "../../types";
 import axiosApi from "../../axiosApi";
 import MealsList from "../../components/MealsList/MealsList";
@@ -6,6 +6,7 @@ import MealsList from "../../components/MealsList/MealsList";
 const Meals = () => {
   const [meals, setMeals] = useState<Meals | null>(null);
   const [loading, setLoading] = useState(false);
+  const [calories, setCalories] = useState<number>(0);
 
   const fetchData = async () => {
     try {
@@ -23,16 +24,36 @@ const Meals = () => {
     void fetchData();
   }, []);
 
+  const totalCalories = useCallback(() => {
+    if (meals) {
+      const calories = Object.values(meals).reduce(
+        (acc, meal) => acc + meal.cal,
+        0
+      );
+      setCalories(calories);
+    }
+  }, [meals]);
+
+  useEffect(() => {
+    totalCalories();
+  }, [meals, totalCalories]);
+
+  const onDelete = async (id: string) => {
+    await axiosApi.delete("meals/" + id + ".json");
+    await fetchData();
+  };
+
   return (
-    <>
+    <div className="container w-75">
+      <h2 className="text-center">Total Calories: {calories}</h2>
       {meals && Object.keys(meals).length > 0 ? (
-        <MealsList meals={meals} />
+        <MealsList meals={meals} onDelete={onDelete} />
       ) : (
-        <div className="col-6">
+        <div>
           <h1 className="text-center mt-5">No meals</h1>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -4,10 +4,10 @@ import Meal from "./Meal";
 
 interface Props {
   meals: Meals | null;
+  onDelete: (id: string) => void;
 }
 
-const MealsList: React.FC<Props> = ({ meals }) => {
-
+const MealsList: React.FC<Props> = ({ meals, onDelete }) => {
   return (
     <div className="d-flex flex-column">
       <ul>
@@ -15,9 +15,11 @@ const MealsList: React.FC<Props> = ({ meals }) => {
           Object.keys(meals).map((key) => (
             <Meal
               key={key}
+              id={key}
               name={meals[key].name}
               category={meals[key].category}
               cal={meals[key].cal}
+              onDelete={() => onDelete(key)}
             />
           ))
         ) : (

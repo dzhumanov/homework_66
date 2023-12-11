@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { mealProps } from "../../types";
 import axiosApi from "../../axiosApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const MealForm = () => {
   const [meal, setMeal] = useState<mealProps>({
@@ -11,16 +11,38 @@ const MealForm = () => {
     cal: 0,
   });
   const [loading, setLoading] = useState(false);
+
+  const { id } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMeal = async () => {
+      setLoading(true);
+      try {
+        if (id) {
+          const response = await axiosApi.get(`meals/${id}.json`);
+          setMeal({ ...response.data, id: id });
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchMeal();
+  }, [id]);
 
   const onChange = (
     event: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
+    const { name, type, value } = event.target;
+
+    const processedValue = type === "number" ? parseFloat(value) : value;
+
     setMeal((prevState) => ({
       ...prevState,
-      [event.target.name]: event.target.value,
+      [name]: processedValue,
     }));
   };
 
@@ -29,8 +51,12 @@ const MealForm = () => {
     setLoading(true);
 
     try {
-      await axiosApi.post("meals.json", meal);
-      navigate("/");
+      if (id) {
+        await axiosApi.put(`meals/${id}.json`, meal);
+      } else {
+        await axiosApi.post("meals.json", meal);
+        navigate("/");
+      }
     } finally {
       setLoading(false);
     }
@@ -40,9 +66,15 @@ const MealForm = () => {
     <div className="container w-75">
       <Form.Group controlId="select" className="mt-3">
         <Form.Label>Category:</Form.Label>
-        <Form.Select name="category" required onChange={onChange}>
+        <Form.Select
+          name="category"
+          required
+          onChange={onChange}
+          value={meal.category}
+        >
           <option>Select a category</option>
           <option value="breakfast">breakfast</option>
+          <option value="snack">snack</option>
           <option value="lunch">lunch</option>
           <option value="dinner">dinner</option>
         </Form.Select>
@@ -56,7 +88,8 @@ const MealForm = () => {
             placeholder="Type something"
             onChange={onChange}
             required
-          ></Form.Control>
+            value={meal.name}
+          />
         </Form.Group>
         <Form.Group controlId="textArea">
           <Form.Label>kcal</Form.Label>
@@ -65,10 +98,11 @@ const MealForm = () => {
             name="cal"
             placeholder="Enter kcal"
             onChange={onChange}
+            value={meal.cal}
           />
         </Form.Group>
         <Button type="submit" variant="primary" className="mt-3">
-          Send
+          {id ? "Edit meal" : "Add meal"}
         </Button>
       </Form>
     </div>
