@@ -20,6 +20,7 @@ const MealsList: React.FC<Props> = ({ meals, onDelete, isLoading }) => {
               name={meals[key].name}
               category={meals[key].category}
               cal={meals[key].cal}
+              date={meals[key].date}
               onDelete={() => onDelete(key)}
               isLoading={isLoading}
             />

@@ -3,6 +3,9 @@ import { Button, Form } from "react-bootstrap";
 import { mealProps } from "../../types";
 import axiosApi from "../../axiosApi";
 import { useNavigate, useParams } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import { parseISO } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 import ButtonSpinner from "../../components/Preloader/ButtonSpinner";
 
 const MealForm = () => {
@@ -10,6 +13,7 @@ const MealForm = () => {
     name: "",
     category: "",
     cal: 0,
+    date: new Date(),
   });
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +26,11 @@ const MealForm = () => {
       try {
         if (id) {
           const response = await axiosApi.get(`meals/${id}.json`);
-          setMeal({ ...response.data, id: id });
+          setMeal({
+            ...response.data,
+            id: id,
+            date: parseISO(response.data.date),
+          });
         }
       } finally {
         setLoading(false);
@@ -44,6 +52,13 @@ const MealForm = () => {
     setMeal((prevState) => ({
       ...prevState,
       [name]: processedValue,
+    }));
+  };
+
+  const onDateChange = (newDate: Date | null) => {
+    setMeal((prevState) => ({
+      ...prevState,
+      date: newDate ? newDate : new Date(),
     }));
   };
 
@@ -90,6 +105,7 @@ const MealForm = () => {
             onChange={onChange}
             required
             value={meal.name}
+            autoComplete="off"
           />
         </Form.Group>
         <Form.Group controlId="textArea">
@@ -102,6 +118,14 @@ const MealForm = () => {
             value={meal.cal}
           />
         </Form.Group>
+        <Form.Group controlId="date">
+          <Form.Label className="d-block">Date</Form.Label>
+          <DatePicker
+            selected={meal.date}
+            onChange={(newDate) => onDateChange(newDate)}
+          />
+        </Form.Group>
+
         <Button type="submit" variant="primary" className="mt-3">
           {loading ? <ButtonSpinner /> : id ? "Edit meal" : "Add meal"}
         </Button>

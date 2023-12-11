@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Meals } from "../../types";
+import { Meals, mealProps } from "../../types";
 import axiosApi from "../../axiosApi";
 import MealsList from "../../components/MealsList/MealsList";
 
@@ -26,10 +26,10 @@ const Meals = () => {
 
   const totalCalories = useCallback(() => {
     if (meals) {
-      const calories = Object.values(meals).reduce(
-        (acc, meal) => acc + meal.cal,
-        0
-      );
+      const currentDate = new Date().toISOString().split("T")[0];
+      const calories = Object.values(meals)
+        .filter((meal: mealProps) => meal.date.includes(currentDate))
+        .reduce((acc, meal) => acc + meal.cal, 0);
       setCalories(calories);
     }
   }, [meals]);

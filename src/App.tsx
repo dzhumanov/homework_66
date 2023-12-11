@@ -15,6 +15,7 @@ function App() {
           <Route path="/" element={<Meals />} />
           <Route path="meal-form/" element={<MealForm />} />
           <Route path="meal-form/:id" element={<MealForm />} />
+          <Route path="*" element={<h1>Not Found!</h1>} />
         </Routes>
       </main>
     </>
