@@ -3,6 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import { mealProps } from "../../types";
 import axiosApi from "../../axiosApi";
 import { useNavigate, useParams } from "react-router-dom";
+import ButtonSpinner from "../../components/Preloader/ButtonSpinner";
 
 const MealForm = () => {
   const [meal, setMeal] = useState<mealProps>({
@@ -102,7 +103,7 @@ const MealForm = () => {
           />
         </Form.Group>
         <Button type="submit" variant="primary" className="mt-3">
-          {id ? "Edit meal" : "Add meal"}
+          {loading ? <ButtonSpinner /> : id ? "Edit meal" : "Add meal"}
         </Button>
       </Form>
     </div>

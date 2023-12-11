@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Meals, mealProps } from "../../types";
+import { Meals } from "../../types";
 import axiosApi from "../../axiosApi";
 import MealsList from "../../components/MealsList/MealsList";
 
@@ -47,7 +47,7 @@ const Meals = () => {
     <div className="container w-75">
       <h2 className="text-center">Total Calories: {calories}</h2>
       {meals && Object.keys(meals).length > 0 ? (
-        <MealsList meals={meals} onDelete={onDelete} />
+        <MealsList meals={meals} onDelete={onDelete} isLoading={loading} />
       ) : (
         <div>
           <h1 className="text-center mt-5">No meals</h1>

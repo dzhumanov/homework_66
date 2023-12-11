@@ -5,9 +5,10 @@ import Meal from "./Meal";
 interface Props {
   meals: Meals | null;
   onDelete: (id: string) => void;
+  isLoading?: boolean;
 }
 
-const MealsList: React.FC<Props> = ({ meals, onDelete }) => {
+const MealsList: React.FC<Props> = ({ meals, onDelete, isLoading }) => {
   return (
     <div className="d-flex flex-column">
       <ul>
@@ -20,6 +21,7 @@ const MealsList: React.FC<Props> = ({ meals, onDelete }) => {
               category={meals[key].category}
               cal={meals[key].cal}
               onDelete={() => onDelete(key)}
+              isLoading={isLoading}
             />
           ))
         ) : (
